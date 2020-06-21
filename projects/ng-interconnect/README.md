@@ -1,24 +1,54 @@
 # NgInterconnect
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.14.
+Makes it possible to override Angular event emitting structure between components. Works across routes. The library contains the code and a sample demo app.
 
-## Code scaffolding
+# Usage
+Import `{Interconnect}` from the library
 
-Run `ng generate component component-name --project ng-interconnect` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ng-interconnect`.
-> Note: Don't forget to add `--project ng-interconnect` or else it will be added to the default project in your `angular.json` file. 
 
-## Build
+# API
 
-Run `ng build ng-interconnect` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Create a connection (a connection host) from any component
 
-## Publishing
+`createConnection(name: string): EventEmitter`
 
-After building your library with `ng build ng-interconnect`, go to the dist folder `cd dist/ng-interconnect` and run `npm publish`.
+The returned event emitter can be used for invoking `emmit`, `error` or `complete` methods. All the client connections will be notified of these events when invoked. Any subsequent creation of the same connection (same name) will return the same event emitter.
 
-## Running unit tests
+If the `complete` methof od the event is invoked, the clients will be notified and the connection will be destroyed. All the client connections are destroyed too.
 
-Run `ng test ng-interconnect` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The connection name should be a strig compatible with JS object key strings.
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+## Making a client connection (to the host) from any component
+
+`connectTo(connectionName: string, clientName: string, callback (function)): disconenct function`
+
+The `clientName` is a unique name and should be a strig compatible with JS object key strings. Any subsequent connections with the same client name will delete the former callback and installs the new one. The dicsonnect function can be called when diconnec from the connection is required.
+
+The callback function should be given 3 arguments.
+
+`(value, error, complete) => {}`
+
+Any amitted vlaue or error will be reflected in the respective arguments. The `complete` argument will be `true` at the completion.
+
+
+## Getting debug info
+The information about all the connections and the clients can be obtained by calling the `connectionInfo` method.
+
+
+
+## Crteate Notifiers
+
+A notifier is one time alert of an event. 
+
+`createNotifier(name: string): Promise<any>`
+
+The returned promise would be fullfilled or rejected by the party who makes a notification on this notifier.
+
+
+## Issuing a notification
+
+'notifiers(name: string)'
+
+The `notifiers` method returns a notifier object matching the name. The notifier object contains the `notify(value: string)` and `error(string)` methods. Calling of either method would fullfill ort reject the promised returned when creating the notifier and delete it immeditately.
+

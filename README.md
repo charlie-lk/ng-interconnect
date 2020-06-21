@@ -19,7 +19,7 @@ If the `complete` methof od the event is invoked, the clients will be notified a
 The connection name should be a strig compatible with JS object key strings.
 
 
-## Making a client connection (to the host)
+## Making a client connection (to the host) from any component
 
 `connectTo(connectionName: string, clientName: string, callback (function)): disconenct function`
 

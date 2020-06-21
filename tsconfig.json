@@ -17,7 +17,15 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "ng-interconnect": [
+        "dist/ng-interconnect"
+      ],
+      "ng-interconnect/*": [
+        "dist/ng-interconnect/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

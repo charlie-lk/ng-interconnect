@@ -3,6 +3,9 @@
 Makes it possible to override Angular event emitting structure between components. Works across routes. The library contains the code and a sample demo app.
 
 # Usage
+
+`npm run ng-interconnect`
+
 Import `{Interconnect}` from the library
 
 

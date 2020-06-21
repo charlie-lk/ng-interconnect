@@ -1,3 +1,5 @@
+[![https://nodei.co/npm/ng-interconnect.png?downloads=true&downloadRank=true&stars=true](https://nodei.co/npm/ng-interconnect.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/ng-interconnect)
+
 # NgInterconnect
 
 Makes it possible to override Angular event emitting structure between components. Works across routes. The library contains the code and a sample demo app.

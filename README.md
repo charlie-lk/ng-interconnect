@@ -12,7 +12,7 @@ Import `{Interconnect}` from the library
 
 `createConnection(name: string): EventEmitter`
 
-The returned event emitter can be used to `emmit`, `error` or `complete`. All the client connections will be notified of these events when invoked. Any subsequent creation of the same connection (same name) will return the same event emitter.
+The returned event emitter can be used for invoking `emmit`, `error` or `complete` methods. All the client connections will be notified of these events when invoked. Any subsequent creation of the same connection (same name) will return the same event emitter.
 
 If the `complete` methof od the event is invoked, the clients will be notified and the connection will be destroyed. All the client connections are destroyed too.
 

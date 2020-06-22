@@ -10,32 +10,32 @@ import { Interconnect} from 'ng-interconnect'
 export class AppComponent {
   title = 'lib-test';
 
-  connectX: EventEmitter<any>;
+  connectorX: EventEmitter<any>;
   connectionMessage: String;
   myConnection;
 
   notifiedMessage: string;
 
-  constructor(private connector: Interconnect) {
+  constructor(private interconnect: Interconnect) {
    
   }
 
 
   //---Connector tests
-  public createConnection() {
+  public createConnector() {
 
-    this.connectX = this.connector.createConnection('X');
+    this.connectorX = this.interconnect.createConnector('X');
 
-    console.log(this.connector.connectionInfo());
+    console.log(this.interconnect.info());
 
   }
 
-  public triggerConnection() {
-    this.connectX.emit('foo');
+  public triggerConnector() {
+    this.connectorX.emit('foo');
   }
 
   public connectTo() {
-    this.myConnection = this.connector.connectTo('X', 'xx', (val, error, complete) => {
+    this.myConnection = this.interconnect.connectTo('X', 'xx', (val, error, complete) => {
       console.log(val);
       console.log(error);
       console.log(complete);
@@ -43,24 +43,24 @@ export class AppComponent {
       alert(val);
     });
     
-    console.log(this.connector.connectionInfo());
+    console.log(this.interconnect.info());
   }
 
   public disconnect() {
     this.myConnection.disconnect();
-    console.log(this.connector.connectionInfo());
+    console.log(this.interconnect.info());
   }
 
 
   //---- Notifier tests
   public async createNotifier() {
-    this.notifiedMessage = await this.connector.createNotifier('y');
+    this.notifiedMessage = await this.interconnect.createNotifier('y');
     
     console.log(this.notifiedMessage);
   }
 
   public triggerNotifier() {
-    this.connector.notifiers('y').notify('bar')
+    this.interconnect.notifiers('y').notify('bar')
   }
 
 

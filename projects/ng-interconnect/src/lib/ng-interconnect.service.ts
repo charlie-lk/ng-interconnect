@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 
 
-interface IConnection {
+interface IConnector {
   observable: Observable<any>,
   event: EventEmitter<any>
   info: any
@@ -23,43 +23,43 @@ interface IObserverClient {
 })
 export class Interconnect {
 
-  private connections: { [key: string]: IConnection } = {};
+  private connectors: { [key: string]: IConnector } = {};
   private _notifiers: {} = {};
-  private currentClientName: string = '';
+  private currentConnectionName: string = '';
 
 
   constructor() { }
 
   //Connections --------
-  public createConnection(name: string): EventEmitter<any> {
+  public createConnector(name: string): EventEmitter<any> {
 
-    if (this.connections[name])
-      return this.connections[name].event;
+    if (this.connectors[name])
+      return this.connectors[name].event;
 
     //A new host
-    this.connections[name] = <IConnection> {};
+    this.connectors[name] = <IConnector> {};
 
     //Create the subscriber function and the event
     let subscriberPackage = this.subscriberFactory(name);
 
-    this.connections[name].observable = new Observable(subscriberPackage.subscriberFn);
-    this.connections[name].event = subscriberPackage.event; ////Save it for returning when the same connection is attempted to be created again
-    this.connections[name].info = subscriberPackage.info;
+    this.connectors[name].observable = new Observable(subscriberPackage.subscriberFn);
+    this.connectors[name].event = subscriberPackage.event; ////Save it for returning when the same connection is attempted to be created again
+    this.connectors[name].info = subscriberPackage.info;
 
     return subscriberPackage.event;
   }
 
-  public connectTo(connectionName: string, clientName: string, callback: any, context?) {
+  public connectTo(connectorName: string, connectionName: string, callback: any, context?) {
 
-    if (!this.connections[connectionName] || !clientName) 
-      throw "This connection cannot be found"
+    if (!this.connectors[connectorName] || !connectionName) 
+      throw "This connector cannot be found"
     else
-      var connection = this.connections[connectionName];
+      var connector = this.connectors[connectorName];
 
 
-    this.currentClientName = clientName;
+    this.currentConnectionName = connectionName;
 
-    var subscription = connection.observable.subscribe({
+    var subscription = connector.observable.subscribe({
       next(e) {
         callback(e, null, null)
       },
@@ -83,11 +83,11 @@ export class Interconnect {
 
   }
 
-  public connectionInfo() {
+  public info() {
 
     let ret = {};
 
-    for (let [key, value] of Object.entries(this.connections))
+    for (let [key, value] of Object.entries(this.connectors))
       ret[key] = value.info()
 
     return ret;
@@ -149,14 +149,14 @@ export class Interconnect {
 
       //If this is the same client, remove the old observer
       for (let [i, observableClient] of observers.entries()) {
-        if (observableClient.clientName === classContext.currentClientName){
+        if (observableClient.clientName === classContext.currentConnectionName){
           observers.splice(i, 1);
         }
       }
 
       observers.push({
         observer,
-        clientName: classContext.currentClientName
+        clientName: classContext.currentConnectionName
       });
 
 
@@ -186,8 +186,8 @@ export class Interconnect {
 
             observers.length = 0;
 
-            classContext.connections[ConnectionName].observable = null;
-            delete classContext.connections[ConnectionName];
+            classContext.connectors[ConnectionName].observable = null;
+            delete classContext.connectors[ConnectionName];
           }
           
         )

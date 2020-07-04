@@ -1,5 +1,5 @@
-import { Component, EventEmitter } from '@angular/core';
-import { Interconnect} from 'ng-interconnect'
+import { Component } from '@angular/core';
+import { Interconnect, IMessageStream} from 'ng-interconnect'
 
 
 @Component({
@@ -10,9 +10,11 @@ import { Interconnect} from 'ng-interconnect'
 export class AppComponent {
   title = 'lib-test';
 
-  connectorX: EventEmitter<any>;
-  connectionMessage: String;
-  myConnection;
+  broadcaster: IMessageStream;
+  yReceiver;
+  xReceiver;
+  cConnection;
+  bConnection;
 
   notifiedMessage: string;
 
@@ -22,32 +24,48 @@ export class AppComponent {
 
 
   //---Connector tests
-  public createConnector() {
+  public createBroadcaster() {
 
-    this.connectorX = this.interconnect.createConnector('X');
+    this.broadcaster = this.interconnect.createBroadcaster('X');
 
     console.log(this.interconnect.info());
 
   }
 
-  public triggerConnector() {
-    this.connectorX.emit('foo');
+  public triggerBroadcaster() {
+    this.broadcaster.emit('foo');
   }
 
-  public connectTo() {
-    this.myConnection = this.interconnect.connectTo('X', 'xx', (val, error, complete) => {
+  public receiveFromXY() {
+    this.yReceiver = this.interconnect.receiveFrom('X', 'Y', (val, error, complete) => {
       console.log(val);
       console.log(error);
       console.log(complete);
-      this.connectionMessage = val;
       alert(val);
     });
     
     console.log(this.interconnect.info());
   }
 
-  public disconnect() {
-    this.myConnection.disconnect();
+
+  public receiveFromXZ() {
+    this.xReceiver = this.interconnect.receiveFrom('X', 'Z', (val, error, complete) => {
+      console.log(val);
+      console.log(error);
+      console.log(complete);
+      alert(val);
+    });
+    
+    console.log(this.interconnect.info());
+  }
+
+  public disconnectXY() {
+    this.yReceiver.disconnect();
+    console.log(this.interconnect.info());
+  }
+
+  public disconnectXZ() {
+    this.xReceiver.disconnect();
     console.log(this.interconnect.info());
   }
 
@@ -61,6 +79,35 @@ export class AppComponent {
 
   public triggerNotifier() {
     this.interconnect.notifiers('y').notify('bar')
+  }
+
+
+  //---- Listener tests
+
+  public createListener() {
+    this.interconnect.createListener('A', (connectionName, data, error, complete) => {
+
+      console.log(`From ${connectionName}: ${data}, ${error}, ${complete}`);
+      alert(connectionName + ' - ' + data);
+    })
+  }
+
+
+  public connectToAB() {
+    this.bConnection = this.interconnect.connectToListener('A', 'B');
+  }
+
+
+  public connectToAC() {
+    this.cConnection = this.interconnect.connectToListener('A', 'C');
+  }
+
+  public sendMessageAB() {
+    this.bConnection.emit('Ball')
+  }
+
+  public sendMessageAC() {
+    this.cConnection.emit('Cat');
   }
 
 

@@ -1,10 +1,17 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Event } from '@angular/router';
 
 
-interface IConnector {
+export interface IMessageStream {
+  emit: any,
+  error: any,
+  complete: any
+}
+
+interface IBroadcaster {
   observable: Observable<any>,
-  event: EventEmitter<any>
+  broadcasterObject: IMessageStream,
   info: any
 }
 
@@ -18,46 +25,62 @@ interface IObserverClient {
   clientName: string
 }
 
+
+interface IListener {
+  event: EventEmitter<any>;
+  subscription: any;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class Interconnect {
 
-  private connectors: { [key: string]: IConnector } = {};
+  private _broadcasters: { [key: string]: IBroadcaster } = {};
   private _notifiers: {} = {};
+  private _listeners: {[key: string]: IListener} = {};
+
+  private currentReceiverName: string = '';
   private currentConnectionName: string = '';
 
 
   constructor() { }
 
-  //Connections --------
-  public createConnector(name: string): EventEmitter<any> {
+  //Broadcaster --------
+  public createBroadcaster(name: string): IMessageStream {
 
-    if (this.connectors[name])
-      return this.connectors[name].event;
+    if (this._broadcasters[name])
+      return this._broadcasters[name].broadcasterObject;
 
-    //A new host
-    this.connectors[name] = <IConnector> {};
+    //A new Broadcaster
+    this._broadcasters[name] = <IBroadcaster> {};
 
     //Create the subscriber function and the event
     let subscriberPackage = this.subscriberFactory(name);
 
-    this.connectors[name].observable = new Observable(subscriberPackage.subscriberFn);
-    this.connectors[name].event = subscriberPackage.event; ////Save it for returning when the same connection is attempted to be created again
-    this.connectors[name].info = subscriberPackage.info;
+    this._broadcasters[name].observable = new Observable(subscriberPackage.subscriberFn);
+    this._broadcasters[name].info = subscriberPackage.info;
 
-    return subscriberPackage.event;
+    //Wrap the event emitter so, the messaging can be further customized
+    this._broadcasters[name].broadcasterObject =  {
+
+      emit: (data) => subscriberPackage.event.emit(data),
+      error: (error) => subscriberPackage.event.error(error),
+      complete: () => subscriberPackage.event.complete()
+    }
+
+    return this._broadcasters[name].broadcasterObject;
   }
 
-  public connectTo(connectorName: string, connectionName: string, callback: any, context?) {
+  public receiveFrom(broadcasterName: string, receiverName: string, callback: any) {
 
-    if (!this.connectors[connectorName] || !connectionName) 
+    if (!this._broadcasters[broadcasterName] || !receiverName) 
       throw "This connector cannot be found"
     else
-      var connector = this.connectors[connectorName];
+      var connector = this._broadcasters[broadcasterName];
 
 
-    this.currentConnectionName = connectionName;
+    this.currentReceiverName = receiverName;
 
     var subscription = connector.observable.subscribe({
       next(e) {
@@ -87,14 +110,14 @@ export class Interconnect {
 
     let ret = {};
 
-    for (let [key, value] of Object.entries(this.connectors))
+    for (let [key, value] of Object.entries(this._broadcasters))
       ret[key] = value.info()
 
     return ret;
  
   }
 
-  //Notifiers --------
+  //Notifier --------
   public createNotifier(name: string) {
 
     if (this._notifiers[name])
@@ -131,7 +154,86 @@ export class Interconnect {
     return this._notifiers[name];
   }
 
-  private subscriberFactory(ConnectionName: string) {
+
+  //Listener-----
+  public createListener(name: string, callback: any) {
+    
+    let event: EventEmitter<any>;
+
+    //Retreive the event and replace the subscription for existing listeners
+    if (this._listeners[name]){
+
+      this._listeners[name].subscription.unsubscribe();
+      event = this._listeners[name].event;  
+    }
+    else
+      event = new EventEmitter();
+
+
+
+    let classContext = this;
+
+    let subscription = event.subscribe({
+
+      next(data){ 
+        callback(data.connectionName, data.data, null, null); 
+      },
+
+      error(error) {
+        callback(error.connectionName, null, error.error, null);
+      },
+
+      complete() {
+        callback(classContext.currentConnectionName , null, null, true);
+        delete classContext._listeners[name];
+      }
+
+    })
+
+
+    //Add the listener
+
+    this._listeners[name] = {event, subscription}
+
+ 
+  }
+
+  public connectToListener(listenerName: string, connectionName:string): IMessageStream {
+
+    if (!this._listeners[listenerName])
+      throw "This listener cannot be found";
+
+    let event: EventEmitter<any> = this._listeners[listenerName].event;
+    
+    let classContext = this;
+
+    return {
+
+      emit(data) {
+        event.emit({connectionName, data})
+      },
+
+      error(error) {
+        event.error({connectionName, error})
+      },
+
+      complete() {
+
+        classContext.currentConnectionName = connectionName;
+        event.complete()
+        
+      }
+    }
+
+  }
+
+
+
+  //--------------------------- Helpers -------------------------//
+
+
+  //Broadcaster helpers
+  private subscriberFactory(observerName: string) {
 
     //Factory to return a subscriber function with multicast support
 
@@ -149,14 +251,14 @@ export class Interconnect {
 
       //If this is the same client, remove the old observer
       for (let [i, observableClient] of observers.entries()) {
-        if (observableClient.clientName === classContext.currentConnectionName){
+        if (observableClient.clientName === classContext.currentReceiverName){
           observers.splice(i, 1);
         }
       }
 
       observers.push({
         observer,
-        clientName: classContext.currentConnectionName
+        clientName: classContext.currentReceiverName
       });
 
 
@@ -186,8 +288,8 @@ export class Interconnect {
 
             observers.length = 0;
 
-            classContext.connectors[ConnectionName].observable = null;
-            delete classContext.connectors[ConnectionName];
+            classContext._broadcasters[observerName].observable = null;
+            delete classContext._broadcasters[observerName];
           }
           
         )
@@ -236,12 +338,6 @@ export class Interconnect {
     )
 
   }
-
-
-
-
-
-
 
 
 

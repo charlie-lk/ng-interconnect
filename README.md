@@ -40,6 +40,31 @@ The callback will be called everytime the broadcaster sends a message to the rec
 - error -- Contains the error sent by the broadcaster when Error happens. Contain `null` for other broadcast types.
 - complete -- Contains `true` when the Complete happens. Contains `null` for other broadcast types.
 
+The method returns the receiver object which contains the `unsubscribe` method. Calling this method will prevent receiving any events by the receiver.
+
+### Example
+
+```
+ let messageStream: IMessageStream = createBroadcaster('stateChanged');   //Create a broadcaster```
+ 
+ ...
+ ...
+ /*Receive from it from another component somewhere in the hierarchy*/
+ 
+ let userReceiver = receiveFrom('stateChanged', 'user', (data, error, complete) => {
+  console.log(data);
+  console.log(error);
+  console.log(complete);
+ })
+ 
+ 
+ '''
+ '''
+ /*Broadcast messages from the first component*/
+ nessageStream.emit('logged-in');
+ ```
+ 
+ 
 
 ## Making a client connection from any component
 

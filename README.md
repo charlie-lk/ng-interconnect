@@ -20,27 +20,6 @@ The API exposes connectivity for 3 use cases.
 
 ## Creating a Broadcaster and receiving from it
 
-`createBroadcaster(name: string)`
-
-The returned IMessageStream object contains the following methods:
-
-- emit(data: any) - Send data to all the recivers
-- error(error: any) - Indicate an error in the underlaying process being broadcasted
-- complete() - Indicates the completion of the broadcaster. Calling this method will terminate the broadcaster automatically
-
-The connector name should be a strig compatible with JS object key strings.
-
-To receive from the broadcaster, 
-
-receiveFrom(broadcasterName: string, receiverName: string; callback);
-
-The callback will be called everytime the broadcaster sends a message to the receivers. The callback takes 3 arguments
-
-- data  -- Contains data sent by the broadcaster when Emit happens. Contains `null` for other broadcast types.
-- error -- Contains the error sent by the broadcaster when Error happens. Contain `null` for other broadcast types.
-- complete -- Contains `true` when the Complete happens. Contains `null` for other broadcast types.
-
-The method returns the receiver object which contains the `unsubscribe` method. Calling this method will prevent receiving any events by the receiver.
 
 ### Example
 
@@ -64,6 +43,31 @@ The method returns the receiver object which contains the `unsubscribe` method. 
  nessageStream.emit('logged-in');
  ```
  
+### Methods
+
+`createBroadcaster(name: string)`
+
+The returned IMessageStream object contains the following methods:
+
+- emit(data: any) - Send data to all the recivers
+- error(error: any) - Indicate an error in the underlaying process being broadcasted
+- complete() - Indicates the completion of the broadcaster. Calling this method will terminate the broadcaster automatically
+
+The connector name should be a strig compatible with JS object key strings.
+
+To receive from the broadcaster, 
+
+receiveFrom(broadcasterName: string, receiverName: string; callback);
+
+The callback will be called everytime the broadcaster sends a message to the receivers. The callback takes 3 arguments
+
+- data  -- Contains data sent by the broadcaster when Emit happens. Contains `null` for other broadcast types.
+- error -- Contains the error sent by the broadcaster when Error happens. Contain `null` for other broadcast types.
+- complete -- Contains `true` when the Complete happens. Contains `null` for other broadcast types.
+
+The method returns the receiver object which contains the `unsubscribe` method. Calling this method will prevent receiving any events by the receiver.
+
+
  
 
 ## Making a client connection from any component

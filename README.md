@@ -1,6 +1,6 @@
 # NgInterconnect
 
-Makes it possible to override Angular event emitting structure between components. Works across routes. The library contains the code and a sample demo app.
+Makes it possible to shortcircuit the long and tedious angular event management across the tree of the component hierarchy.  Works across routes. The library contains the code and a sample demo app.
 
 # Usage
 
@@ -11,15 +11,34 @@ Import `{Interconnect}` from the library
 
 # API
 
-## Creating a connector (a connection host) from any component
+The API exposes connectivity for 3 use cases.
 
-`createConnector(name: string): EventEmitter`
+- Broadcasting messages from one point to many
+- Listening messages from many points
+- Create a promise from one component to another
 
-The returned event emitter can be used for invoking `emmit`, `error` or `complete` methods. All the client connections will be notified of these events when invoked. Any subsequent creation of the same connector (same name) will return the same event emitter.
 
-If the `complete` methof od the event is invoked, all the clients will be notified and the connector will be destroyed. All the client connections are destroyed too.
+## Creating a Broadcaster and receiving from it
+
+`createBroadcaster(name: string)`
+
+The returned IMessageStream object contains the following methods:
+
+- emit(data: any) - Send data to all the recivers
+- error(error: any) - Indicate an error in the underlaying process being broadcasted
+- complete() - Indicates the completion of the broadcaster. Calling this method will terminate the broadcaster automatically
 
 The connector name should be a strig compatible with JS object key strings.
+
+To receive from the broadcaster, 
+
+receiveFrom(broadcasterName: string, receiverName: string; callback);
+
+The callback will be called everytime the broadcaster sends a message to the receivers. The callback takes 3 arguments
+
+- data  -- Contains data sent by the broadcaster when Emit happens. Contains `null` for other broadcast types.
+- error -- Contains the error sent by the broadcaster when Error happens. Contain `null` for other broadcast types.
+- complete -- Contains `true` when the Complete happens. Contains `null` for other broadcast types.
 
 
 ## Making a client connection from any component

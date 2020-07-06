@@ -55,9 +55,10 @@ The returned IMessageStream object contains the following methods:
 
 The connector name should be a strig compatible with JS object key strings.
 
+
 To receive from the broadcaster, 
 
-receiveFrom(broadcasterName: string, receiverName: string; callback);
+`receiveFrom(broadcasterName: string, receiverName: string; callback);`
 
 The callback will be called everytime the broadcaster sends a message to the receivers. The callback takes 3 arguments
 
@@ -70,18 +71,55 @@ The method returns the receiver object which contains the `unsubscribe` method. 
 
  
 
-## Making a client connection from any component
+## Creating a Listener and connecting to it
 
-`connectTo(connectorName: string, connectionName: string, callback (function)): disconenct function`
 
-The `connectorName` is the connector you which to connecto to and the `connectionName` is a the name of the connection being made. The `connectionNane` too should be a strig compatible with JS object key strings. Any subsequent connections with the same connection name will delete the former callback and will install a new one. The dicsonnect function can be called when diconnec from the connection is required.
+### Example
 
-The callback function should be given 3 arguments.
+```
+ createListener('dataExpector', 'user', (connectionName, data, error, complete) => {
+  console.log(`Data from: ${connectionName}`);
+  console.log(data);
+  console.log(error);
+  console.log(complete);
+ })
 
-`(value, error, complete) => {}`
 
-Any emitted vlaue or error will be reflected in the respective arguments. The `complete` argument will be `true` at the completion.
+...
+...
+ /*Connect to it from another component somewhere in the hierarchy*/ 
+ let messageStream: IMessageStream = connectToListener('dataExpector', 'fromUser');   //Create a broadcaster```
+ 
+ messageStream.emit(some_user_data);   //Send a message to the listener
+ ```
+ 
+### Methods
 
+`createBroadcaster(name: string)`
+
+The returned IMessageStream object contains the following methods:
+
+- emit(data: any) - Send data to all the recivers
+- error(error: any) - Indicate an error in the underlaying process being broadcasted
+- complete() - Indicates the completion of the broadcaster. Calling this method will terminate the broadcaster automatically
+
+The connector name should be a strig compatible with JS object key strings.
+
+
+To receive from the broadcaster, 
+
+`receiveFrom(broadcasterName: string, receiverName: string; callback);`
+
+The callback will be called everytime the broadcaster sends a message to the receivers. The callback takes 3 arguments
+
+- data  -- Contains data sent by the broadcaster when Emit happens. Contains `null` for other broadcast types.
+- error -- Contains the error sent by the broadcaster when Error happens. Contain `null` for other broadcast types.
+- complete -- Contains `true` when the Complete happens. Contains `null` for other broadcast types.
+
+The method returns the receiver object which contains the `unsubscribe` method. Calling this method will prevent receiving any events by the receiver.
+
+
+ 
 
 ## Getting debug info
 The information about all the connectors and the connections can be obtained by calling the `info` method.

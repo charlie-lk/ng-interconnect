@@ -107,7 +107,7 @@ The callback will be called everytime a connection  sends a message to the liste
 
 Connecting to the listener and sending a message
 
-`connectToListener(name: string)`
+`connectToListener(listenerName: string, connectionName: string)`
 
 The returned IMessageStream object contains the following methods:
 

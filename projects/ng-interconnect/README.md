@@ -1,6 +1,6 @@
 # NgInterconnect
 
-Makes it possible to override Angular event emitting structure between components. Works across routes. The library contains the code and a sample demo app.
+Makes it possible to shortcircuit the long and tedious angular event management across the tree of the component hierarchy.  Works across routes. The library contains the code and a sample demo app.
 
 # Usage
 
@@ -11,29 +11,114 @@ Import `{Interconnect}` from the library
 
 # API
 
-## Creating a connector (a connection host) from any component
+The API exposes connectivity for 3 use cases.
 
-`createConnector(name: string): EventEmitter`
+- Broadcasting messages from one point to many
+- Listening messages from many points
+- Create a promise from one component to another
 
-The returned event emitter can be used for invoking `emmit`, `error` or `complete` methods. All the client connections will be notified of these events when invoked. Any subsequent creation of the same connector (same name) will return the same event emitter.
 
-If the `complete` methof od the event is invoked, all the clients will be notified and the connector will be destroyed. All the client connections are destroyed too.
+## Creating a Broadcaster and receiving from it
+
+
+### Example
+
+```
+ let messageStream: IMessageStream = createBroadcaster('stateChanged');   //Create a broadcaster```
+ 
+ ...
+ ...
+ /*Receive from it from another component somewhere in the hierarchy*/
+ 
+ let userReceiver = receiveFrom('stateChanged', 'user', (data, error, complete) => {
+  console.log(data);
+  console.log(error);
+  console.log(complete);
+ })
+ 
+ 
+ '''
+ '''
+ /*Broadcast messages from the first component*/
+ nessageStream.emit('logged-in');
+ ```
+ 
+### Methods
+
+`createBroadcaster(name: string)`
+
+The returned IMessageStream object contains the following methods:
+
+- emit(data: any) - Send data to all the recivers
+- error(error: any) - Indicate an error in the underlaying process being broadcasted
+- complete() - Indicates the completion of the broadcaster. Calling this method will terminate the broadcaster automatically
 
 The connector name should be a strig compatible with JS object key strings.
 
 
-## Making a client connection from any component
+To receive from the broadcaster, 
 
-`connectTo(connectorName: string, connectionName: string, callback (function)): disconenct function`
+`receiveFrom(broadcasterName: string, receiverName: string; callback);`
 
-The `connectorName` is the connector you which to connecto to and the `connectionName` is a the name of the connection being made. The `connectionNane` too should be a strig compatible with JS object key strings. Any subsequent connections with the same connection name will delete the former callback and will install a new one. The dicsonnect function can be called when diconnec from the connection is required.
+The callback will be called everytime the broadcaster sends a message to the receivers. The callback takes 3 arguments
 
-The callback function should be given 3 arguments.
+- data  -- Contains data sent by the broadcaster when Emit happens. Contains `null` for other broadcast types.
+- error -- Contains the error sent by the broadcaster when Error happens. Contain `null` for other broadcast types.
+- complete -- Contains `true` when the Complete happens. Contains `null` for other broadcast types. 
 
-`(value, error, complete) => {}`
+The method returns the receiver object which contains the `unsubscribe` method. Calling this method will prevent receiving any events by the receiver.
 
-Any emitted vlaue or error will be reflected in the respective arguments. The `complete` argument will be `true` at the completion.
 
+ 
+
+## Creating a Listener and connecting to it
+
+
+### Example
+
+```
+ createListener('dataExpector', (connectionName, data, error, complete) => {
+  console.log(`Data from: ${connectionName}`);
+  console.log(data);
+  console.log(error);
+  console.log(complete);
+ })
+
+
+...
+...
+ /*Connect to it from another component somewhere in the hierarchy*/ 
+ let messageStream: IMessageStream = connectToListener('dataExpector', 'fromUser');   //Create a broadcaster```
+ 
+ messageStream.emit(some_user_data);   //Send a message to the listener
+ ```
+ 
+### Methods
+
+`createListener(listenerName: string, callback);`
+
+The callback will be called everytime a connection  sends a message to the listener. The callback takes 4 arguments
+
+- connectionName -- The name of the connection which send the current message.
+- data  -- Contains data sent via a connection by calling the Emit method. Contains `null`for other method calls.
+- error -- Contains the error sent via a connection by calling the Error method. Contain `null` for other method calls.
+- complete -- Contains `true` when sent via a connection by calling the Completye method. Contains `null` for other broadcast types. This method will terminate the listener.
+
+
+Connecting to the listener and sending a message
+
+`connectToListener(listenerName: string, connectionName: string)`
+
+The returned IMessageStream object contains the following methods:
+
+- emit(data: any) - Send data to all the listener
+- error(error: any) - Indicate an error in the underlaying process(es) being listened to.
+- complete() - Indicates the completion of the listener. Calling this method will terminate the listener automatically.
+
+The conneciton name should be a strig compatible with JS object key strings.
+
+
+ 
 
 ## Getting debug info
 The information about all the connectors and the connections can be obtained by calling the `info` method.

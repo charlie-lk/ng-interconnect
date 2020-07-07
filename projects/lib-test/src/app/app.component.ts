@@ -44,6 +44,13 @@ export class AppComponent {
       alert(val);
     });
     
+
+    if (this.yReceiver.then)
+      this.yReceiver.then(()=> {
+        console.log('Broadcaster available');
+      })
+
+
     console.log(this.interconnect.info());
   }
 
@@ -95,6 +102,13 @@ export class AppComponent {
 
   public connectToAB() {
     this.bConnection = this.interconnect.connectToListener('A', 'B');
+
+    if (this.bConnection.then)
+      this.bConnection.then((messageStream) => {
+        console.log('Listener available');
+
+        this.bConnection = messageStream;
+      })
   }
 
 

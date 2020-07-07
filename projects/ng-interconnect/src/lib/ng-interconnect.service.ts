@@ -25,6 +25,16 @@ interface IObserverClient {
   clientName: string
 }
 
+interface IWaitingReceiver {
+  name: string;
+  callback: any;
+  subscriptionResolver: any;
+}
+
+interface IWaitingConnection {
+  name: string,
+  messageStreamResolver: any
+}
 
 interface IListener {
   event: EventEmitter<any>;
@@ -39,6 +49,9 @@ export class Interconnect {
   private _broadcasters: { [key: string]: IBroadcaster } = {};
   private _notifiers: {} = {};
   private _listeners: {[key: string]: IListener} = {};
+
+  private _waitingReceivers: {[key: string]: IWaitingReceiver[]} = {};
+  private _waitingConnections: {[key: string]: IWaitingConnection[]} = {};
 
   private currentReceiverName: string = '';
   private currentConnectionName: string = '';
@@ -69,13 +82,46 @@ export class Interconnect {
       complete: () => subscriberPackage.event.complete()
     }
 
+
+    //Add all the waiting receivers
+    if (this._waitingReceivers[name])
+      this._waitingReceivers[name].forEach((waitingReceiver) => {
+        let unsubscriberObj = this.receiveFrom(name, waitingReceiver.name, waitingReceiver.callback);
+
+        waitingReceiver.subscriptionResolver(unsubscriberObj);  //Resolve the prmose with
+      })
+
     return this._broadcasters[name].broadcasterObject;
   }
 
-  public receiveFrom(broadcasterName: string, receiverName: string, callback: any) {
+  public receiveFrom(broadcasterName: string, receiverName: string, callback: any): Promise<any> | any {
 
-    if (!this._broadcasters[broadcasterName] || !receiverName) 
-      throw "This connector cannot be found"
+    if (typeof receiverName !== 'string')
+      throw "Invalid receiver name";
+
+    //Put in the waiting list if the named broadcaster is absent
+    if (!this._broadcasters[broadcasterName]){
+
+      let subscriptionResolver;
+      
+      //Promise to return to the user. This will be resolved with the unsubscriber object soon as the Broadcaster appears
+      let subscriptionPromise = new Promise((resolve) => {
+        subscriptionResolver = resolve;
+      });
+
+
+      if (!this._waitingReceivers[broadcasterName])
+        this._waitingReceivers[broadcasterName] = [];
+
+      this._waitingReceivers[broadcasterName].push({
+        name: receiverName,
+        callback,
+        subscriptionResolver
+      })
+
+      return subscriptionPromise;
+      
+    } 
     else
       var connector = this._broadcasters[broadcasterName];
 
@@ -192,16 +238,51 @@ export class Interconnect {
 
 
     //Add the listener
-
     this._listeners[name] = {event, subscription}
+
+
+    //Add all the waiting 
+    if (this._waitingConnections[name])
+      this._waitingConnections[name].forEach((connection) => {
+        
+        //Obtain the messageStremObject
+        let messageStream = this.connectToListener(name, connection.name);
+
+        //Resolve the promises with that
+        connection.messageStreamResolver(messageStream);
+      })
 
  
   }
 
-  public connectToListener(listenerName: string, connectionName:string): IMessageStream {
+  public connectToListener(listenerName: string, connectionName:string): IMessageStream | Promise<IMessageStream>{
 
-    if (!this._listeners[listenerName])
-      throw "This listener cannot be found";
+    if (typeof connectionName !== 'string')
+      throw 'Invalid connection name';
+
+    //Put in the waiting connections list
+    if (!this._listeners[listenerName]){
+
+      let messageStreamResolver;
+      
+      //Promise to return to the user. This will be resolved with the unsubscriber object soon as the Broadcaster appears
+      let messageStreamPromise = new Promise<IMessageStream>((resolve) => {
+        messageStreamResolver = resolve;
+      });
+
+
+      if (!this._waitingConnections[listenerName])
+        this._waitingConnections[listenerName] = [];
+
+      this._waitingConnections[listenerName].push({
+        name: listenerName,
+        messageStreamResolver
+      })
+
+      return messageStreamPromise;
+
+    }
+    
 
     let event: EventEmitter<any> = this._listeners[listenerName].event;
     

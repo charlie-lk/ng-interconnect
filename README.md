@@ -57,14 +57,16 @@ The returned IMessageStream object contains the following methods:
 - complete() - Indicates the completion of the broadcaster. Calling this method will terminate the broadcaster automatically
 
 The `name` argument supports namespaces such as 'home/students/viewResults'
+/
 
 **Options**
 
   matchNS: RegExp   - A regular expression indicating the recivers whom the broadcasting should be limited to
   
   `myMessageStream.emit('saved', {matchNS: new RegExp('^user/next$')})`
-  
-  
+
+/
+/
 
 #### To receive from the broadcaster, 
 
@@ -82,7 +84,7 @@ The callback takes 4 arguments
 The method returns an array of receiver objects which contain the `disconnect` method. Calling this method will prevent receiving any events by the receiver any more.
 
 #### Creating receivers for broadcasters which are not existing
-**One can also subscibe to a broadcast which is not yet created.** In this case a promise will be returned. This promise will be resolved with an object with the `disconnect` method soon as the broadcaster becomes available.
+One can also subscibe to a broadcast which is not yet created. In this case a promise will be returned. This promise will be resolved with an object with the `disconnect` method soon as the broadcaster becomes available.
  
 
 ## Creating a Listener and connecting to it

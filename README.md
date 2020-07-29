@@ -20,6 +20,7 @@ The API exposes the connectivity for 3 use cases.
 - Create a promise in one component and resolve it from another
 &nbsp;
 &nbsp;
+&nbsp;
 
 ## Creating a Broadcaster and receiving from it
 
@@ -54,9 +55,9 @@ Creates a broadcaster and returns IMessageStream.
 
 The returned IMessageStream object contains the following methods:
 
-- emit(data: any, options: any) - Send data to all the recivers
-- error(error: any, options: any) - Indicate an error in the underlaying process being broadcasted
-- complete() - Indicates the completion of the broadcaster. Calling this method will terminate the broadcaster automatically
+- `emit(data: any, options: any)` - Send data to all the recivers
+- `error(error: any, options: any)` - Indicate an error in the underlaying process being broadcasted
+- `complete(options: any)` - Indicates the completion of the broadcaster. Calling this method will terminate the broadcaster automatically
 
 The `name` argument supports namespaces such as 'home/students/viewResults'
 &nbsp;
@@ -78,10 +79,10 @@ The callback will be called everytime the broadcaster sends a message to the rec
 
 The callback takes 4 arguments
 
-- data  -- Contains data sent by the broadcaster when Emit happens. Contains `null` for other broadcast types.
-- error -- Contains the error sent by the broadcaster when Error happens. Contain `null` for other broadcast types.
-- complete -- Contains `true` when the Complete happens. Contains `null` for other broadcast types. 
-- broadcaster -- Contains the name of the broadcaster who emited/error/complete. This is useful when receiving from multiple broadcasters
+- `data`  -- Contains data sent by the broadcaster when Emit happens. Contains `null` for other broadcast types.
+- `error` -- Contains the error sent by the broadcaster when Error happens. Contain `null` for other broadcast types.
+- `complete` -- Contains `true` when the Complete happens. Contains `null` for other broadcast types. 
+- `broadcaster` -- Contains the name of the broadcaster who emited/error/complete. This is useful when receiving from multiple broadcasters
 
 The method returns an array of receiver objects which contain the `disconnect` method. Calling this method will prevent receiving any events by the receiver any more.
 
@@ -112,7 +113,7 @@ One can also subscibe to a broadcast which is not yet created. In this case a pr
  
  messageStream.emit(some_user_data);   //Send a message to the listener
  ```
- 
+&nbsp;
 ### Methods
 
 `createListener(listenerName: string, receiverName: string; callback);`
@@ -123,7 +124,6 @@ The callback will be called everytime a connection  sends a message to the liste
 - data  -- Contains data sent via a connection by calling the Emit method. Contains `null`for other method calls.
 - error -- Contains the error sent via a connection by calling the Error method. Contain `null` for other method calls.
 - complete -- Contains `true` when sent via a connection by calling the Completye method. Contains `null` for other broadcast types. This method will terminate the listener.
-
 
 &nbsp;
 #### Connecting to the listener and sending a message
@@ -139,7 +139,6 @@ The returned IMessageStream object contains the following methods:
 The conneciton name should be a strig compatible with JS object key strings.
 
 &nbsp;
-&nbsp;
 #### Creating connections with the listeners which are not existing
 **One can also connect to a listener which is not yet created.** In that case a promise will be returned. This promise will be resolved with a messageStream object soon as the listener becomes available.
  
@@ -149,7 +148,8 @@ The conneciton name should be a strig compatible with JS object key strings.
 ## Getting debug info
 The information about all the connectors and the connections can be obtained by calling the `info` method.
 
-
+&nbsp;
+&nbsp;
 
 ## Creating Notifiers
 

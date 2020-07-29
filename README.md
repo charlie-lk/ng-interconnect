@@ -28,13 +28,13 @@ The API exposes the connectivity for 3 use cases.
 ### Example
 
 ```
- let messageStream: IMessageStream = createBroadcaster('stateChanged');   //Create a broadcaster```
+ let messageStream: IMessageStream = createBroadcaster('home/stateChanged');   //Create a broadcaster```
  
  ...
  ...
  /*Receive from it from another component somewhere in the hierarchy*/
  
- let userReceiver = receiveFrom('stateChanged', 'user', (data, error, complete) => {
+ let userReceiver = receiveFrom('home/stateChanged', 'contacts/user', (data, error, complete) => {
   console.log(data);
   console.log(error);
   console.log(complete);

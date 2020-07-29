@@ -71,7 +71,7 @@ The `name` argument supports namespaces such as 'home/students/viewResults'
 &nbsp;
 &nbsp;
 
-#### To receive from the broadcaster, 
+#### To receive from the broadcaster
 
 `receiveFrom(broadcasterName: string | string[], receiverName: string; callback);`
 

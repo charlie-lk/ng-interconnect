@@ -2,6 +2,11 @@
 
 Makes it possible to pass data between Angular components which are placed anywhere in the component hierarchy.  Works across routes and dynamically loaded components. 
 
+- Supports Broadcasters, Listeners and Notifiers
+- Supports namespaces 
+- Supports late binding - create connections even before the other end is created
+- Supports namespace matching when sending messages between components
+
 # Usage
 
 [![NPM](https://nodei.co/npm/ng-interconnect.png?mini=true)](https://nodei.co/npm/ng-interconnect/)

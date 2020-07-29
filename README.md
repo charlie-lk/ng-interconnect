@@ -59,13 +59,14 @@ The returned IMessageStream object contains the following methods:
 The `name` argument supports namespaces such as 'home/students/viewResults'
 
 **Options**
+
   matchNS: RegExp   - A regular expression indicating the recivers whom the broadcasting should be limited to
   
-  myMessageStream.emit('saved', {matchNS: new RegExp('^user/next$')})
+  `myMessageStream.emit('saved', {matchNS: new RegExp('^user/next$')})`
   
   
 
-To receive from the broadcaster, 
+####To receive from the broadcaster, 
 
 `receiveFrom(broadcasterName: string | string[], receiverName: string; callback);`
 
@@ -118,7 +119,7 @@ The callback will be called everytime a connection  sends a message to the liste
 - complete -- Contains `true` when sent via a connection by calling the Completye method. Contains `null` for other broadcast types. This method will terminate the listener.
 
 
-Connecting to the listener and sending a message
+####Connecting to the listener and sending a message
 
 `connectToListener(listenerName: string, connectionName: string)`
 

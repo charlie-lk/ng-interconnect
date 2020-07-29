@@ -18,6 +18,8 @@ The API exposes the connectivity for 3 use cases.
 - Broadcasting messages from one point to many
 - Listening messages from many points
 - Create a promise in one component and resolve it from another
+&nbsp;
+&nbsp;
 
 ## Creating a Broadcaster and receiving from it
 
@@ -43,7 +45,7 @@ The API exposes the connectivity for 3 use cases.
  /*Broadcast messages from the first component*/
  nessageStream.emit('logged-in');
  ```
- 
+&nbsp;
 ### Methods
 
 `createBroadcaster(name: string)`
@@ -61,7 +63,7 @@ The `name` argument supports namespaces such as 'home/students/viewResults'
 
 **Options**
 
-  matchNS: RegExp   - A regular expression indicating the recivers whom the broadcasting should be limited to
+ ` matchNS: RegExp`   - A regular expression indicating the recivers whom the broadcasting should be limited to
   
   `myMessageStream.emit('saved', {matchNS: new RegExp('^user/next$')})`
 

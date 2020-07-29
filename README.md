@@ -57,7 +57,7 @@ The returned IMessageStream object contains the following methods:
 - complete() - Indicates the completion of the broadcaster. Calling this method will terminate the broadcaster automatically
 
 The `name` argument supports namespaces such as 'home/students/viewResults'
-/
+&nbsp;
 
 **Options**
 
@@ -65,8 +65,8 @@ The `name` argument supports namespaces such as 'home/students/viewResults'
   
   `myMessageStream.emit('saved', {matchNS: new RegExp('^user/next$')})`
 
-/
-/
+&nbsp;
+&nbsp;
 
 #### To receive from the broadcaster, 
 
@@ -86,7 +86,9 @@ The method returns an array of receiver objects which contain the `disconnect` m
 #### Creating receivers for broadcasters which are not existing
 One can also subscibe to a broadcast which is not yet created. In this case a promise will be returned. This promise will be resolved with an object with the `disconnect` method soon as the broadcaster becomes available.
  
-
+&nbsp;
+&nbsp;
+&nbsp;
 ## Creating a Listener and connecting to it
 
 
@@ -121,6 +123,7 @@ The callback will be called everytime a connection  sends a message to the liste
 - complete -- Contains `true` when sent via a connection by calling the Completye method. Contains `null` for other broadcast types. This method will terminate the listener.
 
 
+&nbsp;
 #### Connecting to the listener and sending a message
 
 `connectToListener(listenerName: string, connectionName: string)`
@@ -133,9 +136,13 @@ The returned IMessageStream object contains the following methods:
 
 The conneciton name should be a strig compatible with JS object key strings.
 
+&nbsp;
+&nbsp;
 #### Creating connections with the listeners which are not existing
 **One can also connect to a listener which is not yet created.** In that case a promise will be returned. This promise will be resolved with a messageStream object soon as the listener becomes available.
  
+ &nbsp;
+ &nbsp;
 
 ## Getting debug info
 The information about all the connectors and the connections can be obtained by calling the `info` method.
@@ -150,6 +157,7 @@ A notifier is one time alert of an event.
 
 The returned promise would be fullfilled or rejected by the party who makes a notification on this notifier.
 
+&nbsp;
 
 ## Issuing a notification
 

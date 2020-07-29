@@ -68,7 +68,7 @@ The callback will be called everytime the broadcaster sends a message to the rec
 
 The method returns the receiver object which contains the `unsubscribe` method. Calling this method will prevent receiving any events by the receiver.
 
-
+**One can also subscibe to a broadcast which is not yet created.** In that case a promise will be returned. This promise will be resolved with the unsubscriber object soon as the broadcaster becomes available.
  
 
 ## Creating a Listener and connecting to it
@@ -77,7 +77,7 @@ The method returns the receiver object which contains the `unsubscribe` method. 
 ### Example
 
 ```
- createListener('dataExpector', (connectionName, data, error, complete) => {
+ createListener('dataExpector', 'user', (connectionName, data, error, complete) => {
   console.log(`Data from: ${connectionName}`);
   console.log(data);
   console.log(error);
@@ -95,7 +95,7 @@ The method returns the receiver object which contains the `unsubscribe` method. 
  
 ### Methods
 
-`createListener(listenerName: string, callback);`
+`createListener(listenerName: string, receiverName: string; callback);`
 
 The callback will be called everytime a connection  sends a message to the listener. The callback takes 4 arguments
 
@@ -117,7 +117,7 @@ The returned IMessageStream object contains the following methods:
 
 The conneciton name should be a strig compatible with JS object key strings.
 
-
+**One can also connect to a listener which is not yet created.** In that case a promise will be returned. This promise will be resolved with the messageStream object soon as the listener becomes available.
  
 
 ## Getting debug info

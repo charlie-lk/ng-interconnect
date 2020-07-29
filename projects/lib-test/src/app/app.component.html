@@ -1,3 +1,4 @@
+<h1>Simple broadcaster test with regex matching</h1>
 <input type="button" value="Create Broadcaster X" (click)=createBroadcaster()>
 <br>
 <input type="button" value="Trigger X" (click)="triggerBroadcaster()">
@@ -12,6 +13,7 @@
 <br>
 <br>
 
+<h1>Simple listener test</h1>
 <input type="button" value="Create Listener A" (click)=createListener()>
 <br>
 
@@ -25,9 +27,19 @@
 <br>
 <br>
 
+<h1>Simple notifier test</h1>
 <input type="button" value="Create Notifier Y" (click)=createNotifier()>
 <br>
 <input type="button" value="Trigger Notifier Y" (click)=triggerNotifier()>
 <p>{{notifiedMessage}}</p>
+
+
+<h1>Multi broadcaster reception test</h1>
+<input type="button" value="Create Broadcasters P and Q" (click)=createBroadcastersPQ()>
+<br>
+<input type="button" value="Trigger P" (click)="triggerBroadcasterP()">
+<input type="button" value="Trigger Q" (click)="triggerBroadcasterQ()">
+<br>
+<input type="button" value="Receive from P and Q" (click)="receiveFromPandQ_R()">
 
 

@@ -11,6 +11,8 @@ export class AppComponent {
   title = 'lib-test';
 
   broadcaster: IMessageStream;
+  brdP: IMessageStream;
+  brdQ: IMessageStream;
   yReceiver;
   xReceiver;
   cConnection;
@@ -23,21 +25,22 @@ export class AppComponent {
   }
 
 
-  //---Connector tests
+  //---Broadcaster tests
   public createBroadcaster() {
 
-    this.broadcaster = this.interconnect.createBroadcaster('X');
+    this.broadcaster = this.interconnect.createBroadcaster('X/X');
 
     console.log(this.interconnect.info());
 
   }
 
   public triggerBroadcaster() {
-    this.broadcaster.emit('foo');
+    this.broadcaster.emit('foo', {matchNS: new RegExp('^Z\/Z$')});
   }
 
   public receiveFromXY() {
-    this.yReceiver = this.interconnect.receiveFrom('X', 'Y', (val, error, complete) => {
+    this.yReceiver = this.interconnect.receiveFrom('X/X', 'Y/Y', (val, error, complete, bName) => {
+      console.log('Y/Y');
       console.log(val);
       console.log(error);
       console.log(complete);
@@ -56,7 +59,8 @@ export class AppComponent {
 
 
   public receiveFromXZ() {
-    this.xReceiver = this.interconnect.receiveFrom('X', 'Z', (val, error, complete) => {
+    this.xReceiver = this.interconnect.receiveFrom('X/X', 'Z/Z', (val, error, complete, bName) => {
+      console.log('Z/Z');
       console.log(val);
       console.log(error);
       console.log(complete);
@@ -79,20 +83,20 @@ export class AppComponent {
 
   //---- Notifier tests
   public async createNotifier() {
-    this.notifiedMessage = await this.interconnect.createNotifier('y');
+    this.notifiedMessage = await this.interconnect.createNotifier('y/y');
     
     console.log(this.notifiedMessage);
   }
 
   public triggerNotifier() {
-    this.interconnect.notifiers('y').notify('bar')
+    this.interconnect.notifiers('y/y').notify('bar')
   }
 
 
   //---- Listener tests
 
   public createListener() {
-    this.interconnect.createListener('A', (connectionName, data, error, complete) => {
+    this.interconnect.createListener('A/A', (connectionName, data, error, complete) => {
 
       console.log(`From ${connectionName}: ${data}, ${error}, ${complete}`);
       alert(connectionName + ' - ' + data);
@@ -101,7 +105,7 @@ export class AppComponent {
 
 
   public connectToAB() {
-    this.bConnection = this.interconnect.connectToListener('A', 'B');
+    this.bConnection = this.interconnect.connectToListener('A/A', 'B/B');
 
     if (this.bConnection.then)
       this.bConnection.then((messageStream) => {
@@ -113,7 +117,7 @@ export class AppComponent {
 
 
   public connectToAC() {
-    this.cConnection = this.interconnect.connectToListener('A', 'C');
+    this.cConnection = this.interconnect.connectToListener('A/A', 'C/C');
   }
 
   public sendMessageAB() {
@@ -122,6 +126,28 @@ export class AppComponent {
 
   public sendMessageAC() {
     this.cConnection.emit('Cat');
+  }
+
+
+  //Multi broadcaster reception test
+
+  public createBroadcastersPQ() {
+    this.brdP = this.interconnect.createBroadcaster('multitest/p');
+    this.brdQ = this.interconnect.createBroadcaster('multitest/q');
+  }
+
+  public triggerBroadcasterP() {
+    this.brdP.emit('from P');
+  }
+
+  public triggerBroadcasterQ() {
+    this.brdQ.emit('from Q');
+  }
+
+  public receiveFromPandQ_R() {
+    this.interconnect.receiveFrom(['multitest/p', 'multitest/q'], 'mltitest/r', (d, e, c, bName) => {
+      alert(bName);
+    })
   }
 
 

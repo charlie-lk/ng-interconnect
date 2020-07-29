@@ -149,6 +149,8 @@ export class Interconnect {
           broadcaster: this.propNameToStr(broadcasterName),
           subscriptionPromise: subscriptionPromise
         })
+
+        continue;
         
       } 
       else
@@ -175,7 +177,7 @@ export class Interconnect {
 
       retObj.push({
         broadcaster: this.propNameToStr(broadcasterName),
-        unsubscribe: function() {
+        disconnect: function() {
           subscription.unsubscribe()
         }
       })
@@ -183,11 +185,7 @@ export class Interconnect {
     }
 
 
-    return {
-      disconnect() {
-        subscription.unsubscribe();
-      }
-    }
+    return retObj;
 
 
   }

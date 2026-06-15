@@ -1,12 +1,45 @@
-<input type="button" value="Create Connector X" (click)=createConnector()>
+<h1>Simple broadcaster test with regex matching</h1>
+<input type="button" value="Create Broadcaster X" (click)=createBroadcaster()>
 <br>
-<input type="button" value="Trigger X" (click)="triggerConnector()">
+<input type="button" value="Trigger X" (click)="triggerBroadcaster()">
 <br>
-<input type="button" value="Connect to X" (click)="connectTo()">
-<input type="button" value="Disconnect X" (click)="disconnect()">
-<p>{{connectionMessage}}</p>
+<input type="button" value="Receive from X by Y" (click)="receiveFromXY()">
+<input type="button" value="Disconnect X by Y" (click)="disconnectXY()">
+<br>
+<input type="button" value="Receive from X by Z" (click)="receiveFromXZ()">
+<input type="button" value="Disconnect X by Z" (click)="disconnectXZ()">
 
+
+<br>
+<br>
+
+<h1>Simple listener test</h1>
+<input type="button" value="Create Listener A" (click)=createListener()>
+<br>
+
+<input type="button" value="Connect to listener A by B" (click)="connectToAB()">
+<input type="button" value="Send message to A" (click)="sendMessageAB()">
+<br>
+<input type="button" value="Connect to listener A by C" (click)="connectToAC()">
+<input type="button" value="Send message to A" (click)="sendMessageAC()">
+
+
+<br>
+<br>
+
+<h1>Simple notifier test</h1>
 <input type="button" value="Create Notifier Y" (click)=createNotifier()>
 <br>
 <input type="button" value="Trigger Notifier Y" (click)=triggerNotifier()>
 <p>{{notifiedMessage}}</p>
+
+
+<h1>Multi broadcaster reception test</h1>
+<input type="button" value="Create Broadcasters P and Q" (click)=createBroadcastersPQ()>
+<br>
+<input type="button" value="Trigger P" (click)="triggerBroadcasterP()">
+<input type="button" value="Trigger Q" (click)="triggerBroadcasterQ()">
+<br>
+<input type="button" value="Receive from P and Q" (click)="receiveFromPandQ_R()">
+
+
